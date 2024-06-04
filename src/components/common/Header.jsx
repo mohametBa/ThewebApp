@@ -1,14 +1,14 @@
+/* eslint-disable jsx-a11y/no-redundant-roles */
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../actions/authActions"; // Assurez-vous d'importer l'action logout
+import { logout } from "../actions/authActions";
 import { navList } from "../data/Data";
 import SocialIcons from "./SocialIcons";
 
 export default function Header() {
   const [navbarCollapse, setNavbarCollapse] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [userDropdown, setUserDropdown] = useState(false);
 
   const user = useSelector(state => state.auth.user);
   const dispatch = useDispatch();
@@ -24,7 +24,7 @@ export default function Header() {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate('/');
+    navigate("/");
   };
 
   return (
@@ -67,20 +67,30 @@ export default function Header() {
                           onMouseEnter={() => handleMouseEnter(item.id)}
                           onMouseLeave={handleMouseLeave}
                         >
-                          <Link className="nav-link dropdown-toggle">
+                          <Link
+                            className="nav-link dropdown-toggle"
+                            to="#"
+                            id={`navDropdown${item.id}`}
+                            role="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                          >
                             {item.text}
                           </Link>
-                          <div
+                          <ul
                             className={`dropdown-menu rounded-0 m-0 ${
                               activeDropdown === item.id ? "show" : ""
                             }`}
+                            aria-labelledby={`navDropdown${item.id}`}
                           >
                             {item.subItems.map((sub) => (
-                              <Link to={sub.path} className="dropdown-item" key={sub.id}>
-                                {sub.text}
-                              </Link>
+                              <li key={sub.id}>
+                                <Link to={sub.path} className="dropdown-item">
+                                  {sub.text}
+                                </Link>
+                              </li>
                             ))}
-                          </div>
+                          </ul>
                         </div>
                       ) : (
                         <Link to={item.path} className="nav-item nav-link">
@@ -93,20 +103,20 @@ export default function Header() {
                 <SocialIcons />
                 {user ? (
                   <div className="nav-item dropdown">
-                    <span
-                      className="nav-link dropdown-toggle"
-                      onClick={() => setUserDropdown(!userDropdown)}
+                    <button 
+                      className="nav-link dropdown-toggle btn btn-link" 
+                      id="userDropdown" 
+                      role="button" 
+                      data-bs-toggle="dropdown" 
+                      aria-expanded="false"
                     >
                       Welcome {user.prenom}
-                    </span>
-                    <div className={`dropdown-menu dropdown-menu-right ${userDropdown ? "show" : ""}`}>
-                      <Link to={user.role === 'client' ? "/profile/user" : "/profile/transporter"} className="dropdown-item">
-                        Profil
-                      </Link>
-                      <span className="dropdown-item" onClick={handleLogout}>
-                        Déconnexion
-                      </span>
-                    </div>
+                    </button>
+                    <ul className="dropdown-menu" aria-labelledby="userDropdown">
+                      <li><Link className="dropdown-item" to={`/profile/${user.role}`}>Profile</Link></li>
+                      <li><hr className="dropdown-divider" /></li>
+                      <li><button className="dropdown-item" onClick={handleLogout}>Logout</button></li>
+                    </ul>
                   </div>
                 ) : (
                   <Link to="/login" className="btn btn-primary ml-3">

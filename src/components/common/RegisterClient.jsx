@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import validator from 'validator';
 import { registerClient } from '../actions/authActions';
+import Modal from 'react-modal';
 
 export default function RegisterClient() {
     const [formData, setFormData] = useState({
@@ -12,8 +13,11 @@ export default function RegisterClient() {
         password: '',
         ville: ''
     });
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [acceptedTerms, setAcceptedTerms] = useState(false);
 
     const { nom, prenom, email, password, ville } = formData;
+    const error = useSelector(state => state.auth.error);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -24,7 +28,7 @@ export default function RegisterClient() {
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        
+
         if (!validator.isEmail(email)) {
             return alert('Invalid email');
         }
@@ -37,8 +41,16 @@ export default function RegisterClient() {
             return alert('All fields are required');
         }
 
-        dispatch(registerClient({ nom, prenom, email, password, ville }));
-        navigate('/');
+        if (!acceptedTerms) {
+            return alert('You must accept the terms and conditions');
+        }
+
+        try {
+            await dispatch(registerClient({ nom, prenom, email, password, ville }));
+            navigate('/');
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     return (
@@ -106,10 +118,22 @@ export default function RegisterClient() {
                                         required
                                     />
                                 </div>
+                                <div className="form-group">
+                                    <input
+                                        type="checkbox"
+                                        id="terms"
+                                        checked={acceptedTerms}
+                                        onChange={() => setAcceptedTerms(!acceptedTerms)}
+                                    />
+                                    <label htmlFor="terms">
+                                        J'accepte les <span style={{color: 'blue', textDecoration: 'underline', cursor: 'pointer'}} onClick={() => setIsModalOpen(true)}>Conditions d'utilisation</span>
+                                    </label>
+                                </div>
                                 <button type="submit" className="btn btn-primary btn-block mt-3">
                                     Inscription
                                 </button>
                             </form>
+                            {error && <p className="text-danger text-center mt-3">{error}</p>}
                             <p className="text-center mt-3">
                                 Déjà un compte ? <Link to="/login">Connexion</Link>
                             </p>
@@ -117,6 +141,18 @@ export default function RegisterClient() {
                     </div>
                 </div>
             </div>
+            <Modal
+                isOpen={isModalOpen}
+                onRequestClose={() => setIsModalOpen(false)}
+                contentLabel="Politique de Confidentialité"
+            >
+                <h2>Politique de Confidentialité</h2>
+                <div>
+                    <p>Chez [Nom de votre entreprise], nous nous engageons à protéger et à respecter votre vie privée...</p>
+                    {}
+                </div>
+                <button onClick={() => setIsModalOpen(false)}>Fermer</button>
+            </Modal>
         </div>
     );
 }

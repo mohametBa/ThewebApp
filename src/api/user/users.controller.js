@@ -1,4 +1,4 @@
-const UsertService = require('./users.service');
+const UserService = require('./users.service');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const config = require('../../config/index');
@@ -10,7 +10,7 @@ exports.registerUser = async (req, res, next) => {
         const { nom, prenom, email, password, ville } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
         const newClient = { nom, prenom, email, password: hashedPassword, ville };
-        const createdClient = await UsertService.create(newClient);
+        const createdClient = await UserService.create(newClient);
         res.status(201).json(createdClient);
     } catch (error) {
         next(error);
@@ -20,7 +20,7 @@ exports.registerUser = async (req, res, next) => {
 exports.loginUser = async (req, res, next) => {
     try {
         const { email, password } = req.body;
-        const userId = await UsertService.checkPasswordClient(email, password);
+        const userId = await UserService.checkPasswordUser(email, password);
         if (!userId) {
             return next(new UnauthorizedError("Invalid credentials"));
         }
@@ -31,9 +31,9 @@ exports.loginUser = async (req, res, next) => {
     }
 };
 
-exports.getAllUser = async (req, res, next) => {
+exports.getAllUsers = async (req, res, next) => {
     try {
-        const clients = await UsertService.getAll();
+        const clients = await UserService.getAll();
         res.status(200).json(clients);
     } catch (error) {
         next(error);
@@ -42,11 +42,37 @@ exports.getAllUser = async (req, res, next) => {
 
 exports.getUserById = async (req, res, next) => {
     try {
-        const client = await UsertService.get(req.params.id);
+        const client = await UserService.get(req.params.id);
         if (!client) {
             return next(new NotFoundError("User not found"));
         }
         res.status(200).json(client);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.updateUser = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const updatedUser = await UserService.update(id, req.body);
+        if (!updatedUser) {
+            return next(new NotFoundError("User not found"));
+        }
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.deleteUser = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const deletedUser = await UserService.delete(id);
+        if (!deletedUser) {
+            return next(new NotFoundError("User not found"));
+        }
+        res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
         next(error);
     }

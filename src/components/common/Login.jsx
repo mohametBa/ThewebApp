@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+// src/components/common/Login.js
+
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { loginUser } from '../actions/authActions';
@@ -8,17 +10,32 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const user = useSelector(state => state.auth.user);
   const error = useSelector(state => state.auth.error);
+
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'client') {
+        navigate('/profile/user');
+      } else if (user.role === 'transporter') {
+        navigate('/profile/transporter');
+      }
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await dispatch(loginUser(email, password));
-    if (result) {
-      if (result.role === 'client') {
-        navigate('/profile/user');
-      } else if (result.role === 'transporter') {
-        navigate('/profile/transporter');
+    try {
+      const result = await dispatch(loginUser(email, password));
+      if (result && result.role) {
+        if (result.role === 'client') {
+          navigate('/profile/user');
+        } else if (result.role === 'transporter') {
+          navigate('/profile/transporter');
+        }
       }
+    } catch (err) {
+      console.error("Login failed", err);
     }
   };
 
@@ -59,7 +76,7 @@ const Login = () => {
               {error && <p className="text-danger text-center mt-3">{error}</p>}
               <p className="text-center mt-3">
                 Pas encore de compte ? 
-                <Link to="/register-client">Inscription Client</Link> ou 
+                <Link to="/register-client">Inscription Client</Link> <span>ou</span>
                 <Link to="/register-transporteur">Inscription Transporteur</Link>
               </p>
             </div>

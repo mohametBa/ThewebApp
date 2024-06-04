@@ -22,7 +22,7 @@ exports.loginTransporter = async (req, res, next) => {
         const { email, password } = req.body;
         const transporterId = await TransporterService.checkPasswordTransporter(email, password);
         if (!transporterId) {
-            return next(new UnauthorizedError("Invalid credentials"));
+            return next(new UnauthorizedError("Vous n'etes pas autoriser"));
         }
         const token = jwt.sign({ transporterId }, config.secretJwtToken, { expiresIn: '1h' });
         res.status(200).json({ token, role: 'transporter' });
@@ -44,9 +44,35 @@ exports.getTransporterById = async (req, res, next) => {
     try {
         const transporter = await TransporterService.get(req.params.id);
         if (!transporter) {
-            return next(new NotFoundError("Transporter not found"));
+            return next(new NotFoundError("Transporteur introuvable"));
         }
         res.status(200).json(transporter);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.updateTransporter = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const updatedTransporter = await TransporterService.update(id, req.body);
+        if (!updatedTransporter) {
+            return next(new NotFoundError("Transporteur introuvable"));
+        }
+        res.status(200).json(updatedTransporter);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.deleteTransporter = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const deletedTransporter = await TransporterService.delete(id);
+        if (!deletedTransporter) {
+            return next(new NotFoundError("Transporteur introuvable"));
+        }
+        res.status(200).json({ message: 'Transporteur supprimer avec succes' });
     } catch (error) {
         next(error);
     }

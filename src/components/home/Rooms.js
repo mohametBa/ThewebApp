@@ -2,13 +2,15 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CommonHeading from "../common/CommonHeading";
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
 export default function TransporterList() {
   const [transporters, setTransporters] = useState([]);
 
   useEffect(() => {
     const fetchTransporters = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/transporters");
+        const response = await axios.get(`${API_URL}/transporters`);
         setTransporters(response.data);
       } catch (error) {
         console.error("There was an error fetching the transporters!", error);

@@ -53,7 +53,7 @@ export default function About() {
                   <img
                     className="img-fluid rounded w-100 wow zoomIn"
                     data-wow-delay="0.3s"
-                    src="../../assets/img/about-2.jpg"                  />
+                    src="../../assets/img/about-1.jpg"                  />
                 </div>
                 <div className="col-6 text-end">
                   <img

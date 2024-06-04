@@ -49,7 +49,7 @@ export default function TransporterList() {
                       className="btn btn-sm btn-primary rounded py-2 px-4"
                       href="/"
                     >
-                      Contacter
+                      Reserver
                     </a>
                     <a className="btn btn-sm btn-dark rounded py-2 px-4" href="/">
                       Voir Plus

@@ -2,30 +2,34 @@ import { LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT, REGISTER_SUCCESS, REGISTER_FAIL } fr
 
 const initialState = {
   user: null,
+  isAuthenticated: false,
   error: null
 };
 
-// eslint-disable-next-line import/no-anonymous-default-export
-export default function (state = initialState, action) {
+export default function authReducer(state = initialState, action) {
   switch (action.type) {
     case LOGIN_SUCCESS:
+      return {
+        ...state,
+        user: action.payload,
+        isAuthenticated: true,
+        error: null
+      };
     case REGISTER_SUCCESS:
       return {
         ...state,
         user: action.payload,
+        isAuthenticated: true,
         error: null
       };
     case LOGIN_FAIL:
     case REGISTER_FAIL:
-      return {
-        ...state,
-        error: action.payload
-      };
     case LOGOUT:
       return {
         ...state,
         user: null,
-        error: null
+        isAuthenticated: false,
+        error: action.payload
       };
     default:
       return state;
