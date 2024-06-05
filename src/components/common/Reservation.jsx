@@ -1,7 +1,10 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
+require('dotenv').config();
 
+
+//const API_RESERVATION = process.env.CORS_ORIGIN
 const Reservation = () => {
   const { state } = useLocation();
   const { reservationDetails } = state || {};

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import validator from 'validator';
 import { registerClient } from '../actions/authActions';
 import Modal from 'react-modal';
+import PrivacyModal from './PrivacyModal'
 
 export default function RegisterClient() {
     const [formData, setFormData] = useState({
@@ -149,7 +150,7 @@ export default function RegisterClient() {
                 <h2>Politique de Confidentialité</h2>
                 <div>
                     <p>Chez [Nom de votre entreprise], nous nous engageons à protéger et à respecter votre vie privée...</p>
-                    {}
+                    {PrivacyModal}
                 </div>
                 <button onClick={() => setIsModalOpen(false)}>Fermer</button>
             </Modal>

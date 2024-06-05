@@ -1,8 +1,6 @@
-// server.js
-
 const express = require("express");
 const cors = require("cors");
-require('dotenv').config(); 
+require('dotenv').config();
 const NotFoundError = require("./src/error/not-found");
 const userRouter = require("./src/api/user/users.router");
 const transporterRouter = require("./src/api/transporteur/transporteur.route");
@@ -13,7 +11,10 @@ const authRoutes = require('./src/api/auth/auth.route');
 
 const app = express();
 
-app.use(cors({ origin: process.env.CORS_ORIGIN })); 
+const corsOptions =  process.env.CORS_ORIGIN || '*'
+
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use("/api/clients", userRouter);
